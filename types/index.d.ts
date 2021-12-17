@@ -1,6 +1,8 @@
 import { ClientMetrics, ConsumerGlobalConfig, ConsumerTopicConfig, GlobalConfig, LibrdKafkaError, Message, MessageKey, NewTopic, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig, SubscribeTopicList } from "node-rdkafka";
 
-export type ConsumerActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
+export type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
+
+export type ListenActionFunction = (arg: Message) => void;
 
 export type ErrorHandlingFunction = (err: LibrdKafkaError) => void;
 
@@ -10,19 +12,28 @@ export type StringMessageValue = string | null;
 
 export type BooleanOrNumber = boolean | number;
 
+export interface ProduceParameters{
+    topic: string;
+    message: StringMessageValue;
+    partition?: NumberNullUndefined;
+    key?: MessageKey;
+    timestamp?: NumberNullUndefined;
+}
+
 export class KafkaConsumer {
     constructor(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: any);
     connect(): Promise<this | LibrdKafkaError>;
     subscribe(topics: SubscribeTopicList): this;
     unsubscribe(): this;
-    consume(actionOnData: ConsumerActionFunction): void;
-    consumeBatch(msgCount: number, actionOnData: ConsumerActionFunction): void;
+    consume(actionOnData: ConsumeActionFunction): void;
+    consumeBatch(msgCount: number, actionOnData: ConsumeActionFunction): void;
+    listen(actionOnData: ListenActionFunction): void;
 }
 
 export class KafkaProducer {
     constructor(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: any);
     connect(): Promise<this | LibrdKafkaError>;
-    produce(topic: string, partition: NumberNullUndefined, message: StringMessageValue, key?: MessageKey, timestamp?: NumberNullUndefined): BooleanOrNumber;
+    produce({ topic, message, partition, key, timestamp }: ProduceParameters): BooleanOrNumber;
     flush(timeout?: NumberNullUndefined, postFlushAction?: ErrorHandlingFunction): this;
     disconnect(postDisconnectAction?: DisconnectFunction): this;
 }

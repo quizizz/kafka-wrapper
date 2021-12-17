@@ -87,12 +87,16 @@ class KafkaConsumer extends Client{
 
     /**
      * Consumes message one-by-one and executes actionsOnData callback
-     * on the message read.
+     * on the message read. 
+     * 
+     * NOTE: Needs to be called in infinite loop to have it consuming messages continuously.
      * 
      * @param {Function} actionOnData: callback to return when message is read. 
      */
     consume(actionOnData) {
         try {
+            // reset 'data' event listener to no-op callback. 
+            this.consumer.removeAllListeners('data');
             this.consumer.consume(actionOnData);
         } catch (err) {
             this.error('Consumer encountered error while consuming messages', err);
@@ -103,18 +107,34 @@ class KafkaConsumer extends Client{
      * Consumes messages in a batch and executes actionsOnData callback
      * on the message read.
      * 
+     * NOTE: Needs to be called in infinite loop to have it consuming messages continuously.
+     * 
      * @param {Number} msgCount: number of messages to read.  
-     * @param {Function | null} actionOnData: callback to be executed for each message.
+     * @param {Function} actionOnData: callback to be executed for each message.
      */
     consumeBatch(msgCount, actionOnData) {
         try {
+            // reset 'data' event listener to no-op callback. 
+            this.consumer.removeAllListeners('data');
             this.consumer.consume(msgCount, actionOnData);   
         } catch (err) {
             this.error(`Consumer encountered error while consuming messages in batch of size=${msgCount}`, err)
         }
     }
 
-
+    /**
+     * Listens to subscribed topic in flowing mode. Triggers a thread in background which keeps polling for events.
+     *  
+     * @param {Function} actionOnData 
+     */
+    listen(actionOnData) {
+        try {
+            this.consumer.on('data', actionOnData);
+            this.consumer.consume();
+        } catch (err) {
+            this.error('Consumer encountered error while starting to listen to messages.', err);
+        }
+    }
 }
 
 module.exports = KafkaConsumer;

@@ -5,9 +5,8 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function consumerExample() {
-
-if (process.argv.length < 4) {
+async function setupConsumer() {
+  if (process.argv.length < 4) {
     console.log(
         'Please provide command line arguments to the script.\n' +
         'Expected arguments in order are: `bootstrap-server` and `topic`. Example....\n' + 
@@ -38,23 +37,38 @@ if (process.argv.length < 4) {
         { 'metadata.broker.list': bootstrapServers }
     );
     await consumer.connect();
+    consumer.subscribe([topic]);
+    return consumer;
+}
 
-    consumer
-    .subscribe([topic]);
-    
-    const times = 100;
-    for (let i = 0; i < times; i++) {
-      consumer.consume((err, msg) => {
-        console.log('error: ', err);
-        console.log('msg read: ', msg);
-      });
-      console.log('sleeping...');
-      await sleep(1000);
-    }
-  }
-  
-  consumerExample()
-    .catch((err) => {
-      console.error(`Something went wrong:\n${err}`);
-      process.exit(1);
+async function testConsume() {
+  const consumer = await setupConsumer();    
+  const times = 100;
+  for (let i = 0; i < times; i++) {
+    consumer.consume((err, msg) => {
+      console.log('error: ', err);
+      console.log('msg read: ', msg);
     });
+    console.log('sleeping...');
+    await sleep(1000);
+  }
+}
+
+async function testListen() {
+  const consumer = await setupConsumer();    
+  consumer.listen((msg) => {
+    console.log('msg read: ', msg);
+  });
+  const times = 100;
+  for (let i = 0; i < times; i++) {
+    console.log('sleeping...');
+    await sleep(1000);
+  }
+}
+  
+testConsume()
+  .catch((err) => {
+    console.error('Something went wrong:', err);
+    process.exit(1);
+  });
+
