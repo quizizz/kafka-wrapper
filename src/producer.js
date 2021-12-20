@@ -78,7 +78,7 @@ class KafkaProducer extends Client {
      * @param {import('node-rdkafka').NumberNullUndefined} timestamp: timestamp to send with the message. 
      * @returns {import('../types').BooleanOrNumber}: returns boolean or librdkafka error code.
      */
-    produce(topic, partition, message, key, timestamp) {
+    produce({ topic, message, partition = null, key = null, timestamp = null }) {
         try {
             const isSuccess = this.producer.produce(topic, partition, Buffer.from(message), key, timestamp, null);
             // poll everytime, after producing events to see any new delivery reports.

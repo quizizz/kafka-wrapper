@@ -48,7 +48,7 @@ async function producerExample() {
         const key = users[Math.floor(Math.random() * users.length)];
         const value = items[Math.floor(Math.random() * items.length)];
 
-        producer.produce(topic, null, value, key);
+        producer.produce({ topic, message: value, key });
       }
       await sleep(1000);
     }
