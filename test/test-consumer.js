@@ -48,6 +48,21 @@ async function testConsume() {
     consumer.consume((err, msg) => {
       console.log('error: ', err);
       console.log('msg read: ', msg);
+      console.log('msg value: ', msg.value);
+    });
+    console.log('sleeping...');
+    await sleep(1000);
+  }
+}
+
+async function testConsumeBatch() {
+  const consumer = await setupConsumer();    
+  const times = 100;
+  for (let i = 0; i < times; i++) {
+    consumer.consumeBatch(5, (err, msg) => {
+      console.log('error: ', err);
+      console.log('msg read: ', msg);
+      console.log('msg value: ', msg.value);
     });
     console.log('sleeping...');
     await sleep(1000);
@@ -58,6 +73,7 @@ async function testListen() {
   const consumer = await setupConsumer();    
   consumer.listen((msg) => {
     console.log('msg read: ', msg);
+    console.log('msg value: ', msg.value);
   });
   const times = 100;
   for (let i = 0; i < times; i++) {
