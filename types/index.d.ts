@@ -6,15 +6,13 @@ export type ListenActionFunction = (arg: Message) => void;
 
 export type ErrorHandlingFunction = (err: LibrdKafkaError) => void;
 
-export type DisconnectFunction = (err: any, data: ClientMetrics) => any;
-
-export type StringMessageValue = string | null; 
+export type DisconnectFunction = (err: any, data: ClientMetrics) => any; 
 
 export type BooleanOrNumber = boolean | number;
 
 export interface ProduceParameters{
     topic: string;
-    message: StringMessageValue;
+    message: any;
     partition?: NumberNullUndefined;
     key?: MessageKey;
     timestamp?: NumberNullUndefined;
@@ -33,7 +31,7 @@ export class KafkaConsumer {
 export class KafkaProducer {
     constructor(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: any);
     connect(): Promise<this | LibrdKafkaError>;
-    produce({ topic, message, partition, key, timestamp }: ProduceParameters): BooleanOrNumber;
+    produce(args: ProduceParameters): BooleanOrNumber;
     flush(timeout?: NumberNullUndefined, postFlushAction?: ErrorHandlingFunction): this;
     disconnect(postDisconnectAction?: DisconnectFunction): this;
 }

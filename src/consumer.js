@@ -36,21 +36,34 @@ class KafkaConsumer extends Client{
                 this.consumer
                 .connect()
                 .on('ready', (info, metadata) => {
-                    console.log('connected');
                     this.success('Consumer connected to kafka cluster....', {
                         name: info.name,
                         metadata: JSON.stringify(metadata),
                     });
                     resolve(this);
                 })
+                .on('connection.failure', (err, clientMetrics) => {
+                    this.error('Consumer encountered error while connecting to Kafka.', JSON.stringify(err));
+                    reject(err);           
+                })
                 .on('event.error', (err) => {
-                    this.error('Consumer encountered error: ', err);
+                    this.error('Consumer encountered error.', JSON.stringify(err));
                     reject(err);
                 })
                 .on('event.log',  (eventData) => this.log('Logging consumer event: ', eventData))
                 .on('disconnected', (metrics) => {
-                    this.log('Consumer disconnected. Client metrics are: ', metrics.connectionOpened);
+                    this.log('Consumer disconnected. Client metrics are: ' + metrics.connectionOpened)
                 })
+                .on('offset.commit', (err, topicPartitions) => {
+                    if (err) {
+                        this.error('Encountered error while committing offset.', JSON.stringify(err));
+                        return;
+                    }
+                    this.log('Commited offset for topic-partitions: ' + JSON.stringify(topicPartitions));
+                })
+                .on('subscribed', (topics) => {
+                    this.log('Subscribed to topics: ' + JSON.stringify(topics));
+                });
             } catch (err) {
                 this.error('Consumer encountered while connecting to kafka server.', err);
                 reject(err);
@@ -67,7 +80,7 @@ class KafkaConsumer extends Client{
         try {
             this.consumer.subscribe(topics);
         } catch (err) {
-            this.console.error(`Consumer encountered error while subscribing to topics=${topics}`, err);
+            this.error(`Consumer encountered error while subscribing to topics=${topics}`, err);
         }
         return this;
     }
@@ -80,7 +93,7 @@ class KafkaConsumer extends Client{
         try {
             this.consumer.unsubscribe();
         } catch (err) {
-            this.console.error('Consumer encountered error while unsubscribing', err);
+            this.error('Consumer encountered error while unsubscribing', err);
         }
         return this;
     }
@@ -97,7 +110,7 @@ class KafkaConsumer extends Client{
         try {
             // reset 'data' event listener to no-op callback. 
             this.consumer.removeAllListeners('data');
-            this.consumer.consume(actionOnData);
+            this.consumer.consume(this._wrapConsumeCallbackWrapper(actionOnData));
         } catch (err) {
             this.error('Consumer encountered error while consuming messages', err);
         }
@@ -116,7 +129,7 @@ class KafkaConsumer extends Client{
         try {
             // reset 'data' event listener to no-op callback. 
             this.consumer.removeAllListeners('data');
-            this.consumer.consume(msgCount, actionOnData);   
+            this.consumer.consume(msgCount, this._wrapConsumeCallbackWrapper(actionOnData));   
         } catch (err) {
             this.error(`Consumer encountered error while consuming messages in batch of size=${msgCount}`, err)
         }
@@ -129,11 +142,48 @@ class KafkaConsumer extends Client{
      */
     listen(actionOnData) {
         try {
-            this.consumer.on('data', actionOnData);
+            this.consumer.on('data', this._wrapListenCallbackWrapper(actionOnData));
             this.consumer.consume();
         } catch (err) {
             this.error('Consumer encountered error while starting to listen to messages.', err);
         }
+    }
+
+    _wrapConsumeCallbackWrapper(actionOnData) {
+        const wrapper = (err, msgs) => {
+            if (err) {
+                actionOnData(err, msgs);
+                return;
+            }
+            if (!Array.isArray(msgs)) {
+                msgs = [msgs];
+            }
+            msgs.forEach((msg) => {
+                msg = this._parseMessage(msg);
+                actionOnData(err, msg); 
+            });
+        };
+        return wrapper;
+    }
+
+    _wrapListenCallbackWrapper(actionOnData) {
+        const wrapper = (msg) => {
+            msg = this._parseMessage(msg);
+            actionOnData(msg);
+        };
+        return wrapper;
+    }
+
+    /**
+     * Parses message before passing it to consumer callback.
+     * @param {Object} msg - expects it to be in node-rdkafka msg format. 
+     * @returns 
+     */
+    _parseMessage(msg) {
+        msg.value = msg.value == null ? null : JSON.parse(msg.value.toString());
+        msg.key = msg.key != null && Buffer.isBuffer(msg.key)? msg.key.toString() : msg.key;
+
+        return msg;
     }
 }
 

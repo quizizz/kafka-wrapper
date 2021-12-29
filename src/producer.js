@@ -45,6 +45,8 @@ class KafkaProducer extends Client {
                         name: info.name,
                         metadata: JSON.stringify(metadata),
                     });
+                    // set automating polling to every second for delivery reports
+                    this.producer.setPollInterval(1000);
                     resolve(this);
                 })
                 .on('delivery-report', (err, report) => {
@@ -61,7 +63,7 @@ class KafkaProducer extends Client {
                 .on('event.log',  (eventData) => this.log('Logging consumer event: ', eventData))
                 .on('disconnected', (metrics) => {
                     this.log('Producer disconnected. Client metrics are: ', metrics.connectionOpened);
-                });   
+                });
             } catch (err) {
                 this.error('Producer encountered while connecting to kafka server.', err);
                 reject(err);
@@ -73,16 +75,15 @@ class KafkaProducer extends Client {
      * Produce a message to a topic-partition.
      * @param {String} topic: name of topic 
      * @param {import('node-rdkafka').NumberNullUndefined} partition: partition number to produce to.
-     * @param {import('../types').StringMessageValue} message: message to be produced. 
+     * @param {any} message: message to be produced. 
      * @param {import('node-rdkafka').MessageKey} key: key associated with the message.
      * @param {import('node-rdkafka').NumberNullUndefined} timestamp: timestamp to send with the message. 
      * @returns {import('../types').BooleanOrNumber}: returns boolean or librdkafka error code.
      */
     produce({ topic, message, partition = null, key = null, timestamp = null }) {
         try {
-            const isSuccess = this.producer.produce(topic, partition, Buffer.from(message), key, timestamp, null);
-            // poll everytime, after producing events to see any new delivery reports.
-            this.producer.poll();
+            const stringifiedMsg = JSON.stringify(message); 
+            const isSuccess = this.producer.produce(topic, partition, Buffer.from(stringifiedMsg), key, timestamp, null);
             return isSuccess;
         } catch (err) {
             this.error(`Producer encountered error while producing message to topic=${topic}, partition=${partition} with key=${key}`, err);
