@@ -1,7 +1,7 @@
 const Kafka = require('node-rdkafka');
 const Client = require('./client');
 
-class KafkaConsumer extends Client{
+class KafkaConsumer extends Client {
 
     /**
      * Initializes a KafkaConsumer.
@@ -15,11 +15,11 @@ class KafkaConsumer extends Client{
         // consumer specific default configs we would like to have
         config = Object.assign({
             'allow.auto.create.topics': true,
-          }, 
-          config,
-          { 
-            'group.id': groupId,
-        });
+        },
+            config,
+            {
+                'group.id': groupId,
+            });
         super(clientId, 'consumer', config, topicConfig, emitter);
         this.consumer = new Kafka.KafkaConsumer(this.config, this.topicConfig);
     }
@@ -34,36 +34,36 @@ class KafkaConsumer extends Client{
         return new Promise((resolve, reject) => {
             try {
                 this.consumer
-                .connect()
-                .on('ready', (info, metadata) => {
-                    this.success('Consumer connected to kafka cluster....', {
-                        name: info.name,
-                        metadata: JSON.stringify(metadata),
+                    .connect()
+                    .on('ready', (info, metadata) => {
+                        this.success('Consumer connected to kafka cluster....', {
+                            name: info.name,
+                            metadata: JSON.stringify(metadata),
+                        });
+                        resolve(this);
+                    })
+                    .on('connection.failure', (err, clientMetrics) => {
+                        this.error('Consumer encountered error while connecting to Kafka.', JSON.stringify(err));
+                        reject(err);
+                    })
+                    .on('event.error', (err) => {
+                        this.error('Consumer encountered error.', JSON.stringify(err));
+                        reject(err);
+                    })
+                    .on('event.log', (eventData) => this.log('Logging consumer event: ', eventData))
+                    .on('disconnected', (metrics) => {
+                        this.log('Consumer disconnected. Client metrics are: ' + metrics.connectionOpened)
+                    })
+                    .on('offset.commit', (err, topicPartitions) => {
+                        if (err) {
+                            this.error('Encountered error while committing offset.', JSON.stringify(err));
+                            return;
+                        }
+                        this.log('Commited offset for topic-partitions: ' + JSON.stringify(topicPartitions));
+                    })
+                    .on('subscribed', (topics) => {
+                        this.log('Subscribed to topics: ' + JSON.stringify(topics));
                     });
-                    resolve(this);
-                })
-                .on('connection.failure', (err, clientMetrics) => {
-                    this.error('Consumer encountered error while connecting to Kafka.', JSON.stringify(err));
-                    reject(err);           
-                })
-                .on('event.error', (err) => {
-                    this.error('Consumer encountered error.', JSON.stringify(err));
-                    reject(err);
-                })
-                .on('event.log',  (eventData) => this.log('Logging consumer event: ', eventData))
-                .on('disconnected', (metrics) => {
-                    this.log('Consumer disconnected. Client metrics are: ' + metrics.connectionOpened)
-                })
-                .on('offset.commit', (err, topicPartitions) => {
-                    if (err) {
-                        this.error('Encountered error while committing offset.', JSON.stringify(err));
-                        return;
-                    }
-                    this.log('Commited offset for topic-partitions: ' + JSON.stringify(topicPartitions));
-                })
-                .on('subscribed', (topics) => {
-                    this.log('Subscribed to topics: ' + JSON.stringify(topics));
-                });
             } catch (err) {
                 this.error('Consumer encountered while connecting to kafka server.', err);
                 reject(err);
@@ -129,7 +129,7 @@ class KafkaConsumer extends Client{
         try {
             // reset 'data' event listener to no-op callback. 
             this.consumer.removeAllListeners('data');
-            this.consumer.consume(msgCount, this._wrapConsumeCallbackWrapper(actionOnData));   
+            this.consumer.consume(msgCount, this._wrapConsumeCallbackWrapper(actionOnData));
         } catch (err) {
             this.error(`Consumer encountered error while consuming messages in batch of size=${msgCount}`, err)
         }
@@ -160,7 +160,7 @@ class KafkaConsumer extends Client{
             }
             msgs.forEach((msg) => {
                 msg = this._parseMessage(msg);
-                actionOnData(err, msg); 
+                actionOnData(err, msg);
             });
         };
         return wrapper;
@@ -168,8 +168,12 @@ class KafkaConsumer extends Client{
 
     _wrapListenCallbackWrapper(actionOnData) {
         const wrapper = (msg) => {
-            msg = this._parseMessage(msg);
-            actionOnData(msg);
+            try {
+                msg = this._parseMessage(msg);
+                actionOnData(msg, null);
+            } catch (e) {
+                actionOnData(msg, e)
+            }
         };
         return wrapper;
     }
@@ -181,7 +185,7 @@ class KafkaConsumer extends Client{
      */
     _parseMessage(msg) {
         msg.value = msg.value == null ? null : JSON.parse(msg.value.toString());
-        msg.key = msg.key != null && Buffer.isBuffer(msg.key)? msg.key.toString() : msg.key;
+        msg.key = msg.key != null && Buffer.isBuffer(msg.key) ? msg.key.toString() : msg.key;
 
         return msg;
     }

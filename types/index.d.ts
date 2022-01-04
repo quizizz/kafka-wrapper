@@ -2,7 +2,7 @@ import { ClientMetrics, ConsumerGlobalConfig, ConsumerTopicConfig, GlobalConfig,
 
 export type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
 
-export type ListenActionFunction = (arg: Message) => void;
+export type ListenActionFunction = (arg: Message, err?: Error) => void;
 
 export type ErrorHandlingFunction = (err: LibrdKafkaError) => void;
 
