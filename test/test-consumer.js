@@ -71,7 +71,8 @@ async function testConsumeBatch() {
 
 async function testListen() {
   const consumer = await setupConsumer();    
-  consumer.listen((msg) => {
+  consumer.listen((msg, err) => {
+    console.log('error: ', err);
     console.log('msg read: ', msg);
     console.log('msg value: ', msg.value);
   });
@@ -82,7 +83,7 @@ async function testListen() {
   }
 }
   
-testConsume()
+testListen()
   .catch((err) => {
     console.error('Something went wrong:', err);
     process.exit(1);
