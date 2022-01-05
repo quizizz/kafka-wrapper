@@ -71,8 +71,7 @@ async function testConsumeBatch() {
 
 async function testListen() {
   const consumer = await setupConsumer();    
-  consumer.listen((msg, err) => {
-    console.log('error: ', err);
+  consumer.listen((msg) => {
     console.log('msg read: ', msg);
     console.log('msg value: ', msg.value);
   });

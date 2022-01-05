@@ -170,9 +170,9 @@ class KafkaConsumer extends Client {
         const wrapper = (msg) => {
             try {
                 msg = this._parseMessage(msg);
-                actionOnData(msg, null);
+                actionOnData(msg);
             } catch (e) {
-                actionOnData(msg, e)
+                this.error(e);
             }
         };
         return wrapper;
