@@ -38,7 +38,6 @@ class KafkaConsumer extends Client {
                     .on('ready', (info, metadata) => {
                         this.success('Consumer connected to kafka cluster....', {
                             name: info.name,
-                            metadata: JSON.stringify(metadata),
                         });
                         resolve(this);
                     })
