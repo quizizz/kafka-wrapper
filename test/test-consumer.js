@@ -82,7 +82,7 @@ async function testListen() {
   }
 }
   
-testConsume()
+testListen()
   .catch((err) => {
     console.error('Something went wrong:', err);
     process.exit(1);

@@ -43,7 +43,6 @@ class KafkaProducer extends Client {
                 .on('ready', (info, metadata) => {
                     this.success('Producer connected to kafka cluster...', {
                         name: info.name,
-                        metadata: JSON.stringify(metadata),
                     });
                     // set automating polling to every second for delivery reports
                     this.producer.setPollInterval(1000);
