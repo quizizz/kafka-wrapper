@@ -142,6 +142,7 @@ class KafkaConsumer extends Client {
     listen(actionOnData) {
         try {
             this.consumer.on('data', this._wrapListenCallbackWrapper(actionOnData));
+            this.consumer.consume();
         } catch (err) {
             this.error('Consumer encountered error while starting to listen to messages.', err);
         }
