@@ -1,9 +1,15 @@
-const Kafka = require('node-rdkafka');
-const Client = require('./client');
+import Kafka, { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from 'node-rdkafka';
+import { EventEmitter } from 'stream';
+import Client from './client';
 
-let _kafkaConsumer = null;
+type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
+
+type ListenActionFunction = (arg: Message) => void;
+
+let _kafkaConsumer: KafkaConsumer = null;
 
 class KafkaConsumer extends Client {
+    private consumer: Kafka.KafkaConsumer;
 
     /**
      * Initializes a KafkaConsumer.
@@ -13,7 +19,7 @@ class KafkaConsumer extends Client {
      * @param {import('node-rdkafka').ConsumerTopicConfig} topicConfig: topic configs 
      * @param {EventEmitter} emitter: to emit log events
      */
-    constructor(clientId, groupId, config, topicConfig, emitter) {
+    constructor(clientId: string, groupId: string, private config: ConsumerGlobalConfig, private topicConfig: ConsumerTopicConfig, emitter: EventEmitter) {
         // consumer specific default configs we would like to have
         config = Object.assign({
             'allow.auto.create.topics': true,
@@ -32,7 +38,7 @@ class KafkaConsumer extends Client {
      *
      * @returns {Promise} 
      */
-    connect() {
+    connect(): Promise<this | LibrdKafkaError> {
         return new Promise((resolve, reject) => {
             try {
                 this.consumer
@@ -77,7 +83,7 @@ class KafkaConsumer extends Client {
      * @param {import('node-rdkafka').SubscribeTopicList} topics: array of topic names. 
      * @returns {KafkaConsumer}
      */
-    subscribe(topics) {
+    subscribe(topics: SubscribeTopicList): this {
         try {
             this.consumer.subscribe(topics);
         } catch (err) {
@@ -90,7 +96,7 @@ class KafkaConsumer extends Client {
      * Unsubscribe from all the subscribed topics.s
      * @returns {KafkaConsumer}
      */
-    unsubscribe() {
+    unsubscribe(): this {
         try {
             this.consumer.unsubscribe();
         } catch (err) {
@@ -107,7 +113,7 @@ class KafkaConsumer extends Client {
      * 
      * @param {Function} actionOnData: callback to return when message is read. 
      */
-    consume(actionOnData) {
+    consume(actionOnData: ConsumeActionFunction): void {
         try {
             // reset 'data' event listener to no-op callback. 
             this.consumer.removeAllListeners('data');
@@ -126,7 +132,7 @@ class KafkaConsumer extends Client {
      * @param {Number} msgCount: number of messages to read.  
      * @param {Function} actionOnData: callback to be executed for each message.
      */
-    consumeBatch(msgCount, actionOnData) {
+    consumeBatch(msgCount: number, actionOnData: ConsumeActionFunction): void {
         try {
             // reset 'data' event listener to no-op callback. 
             this.consumer.removeAllListeners('data');
@@ -141,7 +147,7 @@ class KafkaConsumer extends Client {
      *  
      * @param {Function} actionOnData 
      */
-    listen(actionOnData) {
+    listen(actionOnData: ListenActionFunction): void {
         try {
             this.consumer.on('data', this._wrapListenCallbackWrapper(actionOnData));
             this.consumer.consume();
@@ -192,11 +198,11 @@ class KafkaConsumer extends Client {
     }
 }
 
-function getKafkaConsumer(clientId, groupId, config, topicConfig, emitter) {
+function getKafkaConsumer(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter): KafkaConsumer {
     if (!_kafkaConsumer) {
         _kafkaConsumer = new KafkaConsumer(clientId, groupId, config, topicConfig, emitter);
     }
     return _kafkaConsumer;
 }
 
-module.exports = getKafkaConsumer;
+export default getKafkaConsumer;

@@ -1,9 +1,19 @@
-const Kafka = require('node-rdkafka');
-const Client = require('./client');
+import EventEmitter from 'events';
+import Kafka, { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from 'node-rdkafka';
+import Client, { ErrorHandlingFunction } from './client';
 
-let _kafkaProducer = null;
+interface ProduceParameters{
+    topic: string;
+    message: any;
+    partition?: NumberNullUndefined;
+    key?: MessageKey;
+    timestamp?: NumberNullUndefined;
+}
+
+let _kafkaProducer: KafkaProducer = null;
 
 class KafkaProducer extends Client {
+    private producer: Kafka.Producer;
 
     /**
      * Initializes a KafkaProducer.
@@ -12,7 +22,7 @@ class KafkaProducer extends Client {
      * @param {import('node-rdkafka').ProducerTopicConfig} topicConfig: topic configs.
      * @param {EventEmitter} emitter: to emit log messages
      */
-    constructor(clientId, config, topicConfig, emitter) {
+    constructor(clientId: string, private config: ProducerGlobalConfig, private topicConfig: ProducerTopicConfig, emitter: EventEmitter) {
         // producer config defaults should go here.
         config = Object.assign({
             'retry.backoff.ms': 200,
@@ -37,7 +47,7 @@ class KafkaProducer extends Client {
      *
      * @returns {Promise} 
      */
-    connect() {
+    connect(): Promise<this | LibrdKafkaError> {
         return new Promise((resolve, reject) => {
             try {
                 this.producer
@@ -81,7 +91,7 @@ class KafkaProducer extends Client {
      * @param {import('node-rdkafka').NumberNullUndefined} timestamp: timestamp to send with the message. 
      * @returns {import('../types').BooleanOrNumber}: returns boolean or librdkafka error code.
      */
-    produce({ topic, message, partition = null, key = null, timestamp = null }) {
+    produce({ topic, message, partition = null, key = null, timestamp = null }: ProduceParameters): boolean | number {
         try {
             const stringifiedMsg = JSON.stringify(message); 
             const isSuccess = this.producer.produce(topic, partition, Buffer.from(stringifiedMsg), key, timestamp, null);
@@ -99,7 +109,7 @@ class KafkaProducer extends Client {
      * @param {import('../types').ErrorHandlingFunction} postFlushAction 
      * @returns {KafkaProducer}
      */
-    flush(timeout, postFlushAction) {
+    flush(timeout?: NumberNullUndefined, postFlushAction?: ErrorHandlingFunction): this {
         try {
             this.producer.flush(timeout, postFlushAction);
         } catch (err) {
@@ -113,7 +123,7 @@ class KafkaProducer extends Client {
      * @param {import('../types').DisconnectFunction} postDisconnectAction 
      * @returns {KafkaProducer}
      */
-    disconnect(postDisconnectAction) {
+    disconnect(postDisconnectAction?: (err: any, data: ClientMetrics) => any): this {
         try {
             this.producer.disconnect(postDisconnectAction);
         } catch (err) {
@@ -123,11 +133,11 @@ class KafkaProducer extends Client {
     }
 }
 
-function getKafkaProducer(clientId, config, topicConfig, emitter) {
+function getKafkaProducer(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter): KafkaProducer {
     if (!_kafkaProducer) {
         _kafkaProducer = new KafkaProducer(clientId, config, topicConfig, emitter);
     }
     return _kafkaProducer;
 }
 
-module.exports = getKafkaProducer;
+export default getKafkaProducer;

@@ -1,22 +1,26 @@
-class Client {
-    constructor(clientId, clientType, config, topicConfig, emitter) {
+import EventEmitter from "events";
+import { GlobalConfig, LibrdKafkaError, TopicConfig } from "node-rdkafka";
+
+export default class Client {
+    constructor(private clientId: string,
+        private clientType: string, private _config: GlobalConfig, private _topicConfig: TopicConfig, private emitter: EventEmitter) {
         this.clientId = clientId;
         this.clientType = clientType;
         
         // common config defaults should go here.
-        this.config = Object.assign({
+        this._config = Object.assign({
             'metadata.broker.list': 'localhost:9092',
             'socket.keepalive.enable': true,
           }, 
-          config,
+          _config,
           { 'client.id': clientId }
         );
         // commong topic configs defaults should go here. 
-        this.topicConfig = topicConfig;
+        this._topicConfig = _topicConfig;
         this.emitter = emitter;
     }
 
-    _logMessage(msgType, message, data) {
+    _logMessage(msgType: 'log' | 'success' | 'error', message: string, data: any) {
         if (this.emitter != null) {
             this.emitter.emit(msgType, {
                 clientId: this.clientId,
@@ -31,17 +35,17 @@ class Client {
         }
     }
 
-    log(message, data) {
+    log(message: string, data?: any) {
         this._logMessage('log', message, data);
     }
 
-    success(message, data) {
+    success(message: string, data?: any) {
         this._logMessage('success', message, data);
     }
 
-    error(err, data) {
+    error(err: string, data?: any) {
         this._logMessage('error', err, data);
     }
 }
 
-module.exports = Client;
+export type ErrorHandlingFunction = (err: LibrdKafkaError) => void;

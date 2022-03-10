@@ -1,7 +1,9 @@
-const Client = require('./client');
-const Kafka = require('node-rdkafka');
+import Client from './client';
+import { AdminClient, GlobalConfig } from 'node-rdkafka';
+import EventEmitter from 'events';
 
 class KafkaAdmin extends Client {
+    private adminClient;
 
     /**
      * Initialzes a KafkaAdmin client with config.
@@ -10,7 +12,7 @@ class KafkaAdmin extends Client {
      * @param {object} config - global kafka config
      * @param {object} emitter - emitter to emit log event
      */
-    constructor(clientId, config, emitter) {
+    constructor(clientId: string, private config: GlobalConfig, emitter: EventEmitter) {
         super(clientId, 'admin', config, {}, emitter);
         this.adminClient = null;
     }
@@ -18,10 +20,10 @@ class KafkaAdmin extends Client {
     /**
      * Connect to kafka server as admin.
      */
-    async connect() {
+    async connect(): Promise<void> {
         try {
             if (this.adminClient === null) {
-                this.adminClient = await Kafka.AdminClient.create(this.config);
+                this.adminClient = await AdminClient.create(this.config);
             }
             this.success('Successfully connected to kafka as admin');
         } catch (err) {
@@ -75,4 +77,4 @@ class KafkaAdmin extends Client {
     }
 }
 
-module.exports = KafkaAdmin;
+export default KafkaAdmin;
