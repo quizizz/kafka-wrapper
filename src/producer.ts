@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import Kafka, { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from 'node-rdkafka';
 import Client, { ErrorHandlingFunction } from './client';
 
-interface ProduceParameters{
+export interface ProduceParameters{
     topic: string;
     message: any;
     partition?: NumberNullUndefined;

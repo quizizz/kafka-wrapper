@@ -2,9 +2,9 @@ import Kafka, { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Mess
 import { EventEmitter } from 'stream';
 import Client from './client';
 
-type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
+export type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
 
-type ListenActionFunction = (arg: Message) => void;
+export type ListenActionFunction = (arg: Message) => void;
 
 let _kafkaConsumer: KafkaConsumer = null;
 
