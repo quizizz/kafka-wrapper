@@ -2,8 +2,8 @@
 import { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from 'node-rdkafka';
 import { EventEmitter } from 'stream';
 import Client from './client';
-declare type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
-declare type ListenActionFunction = (arg: Message) => void;
+export declare type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
+export declare type ListenActionFunction = (arg: Message) => void;
 declare class KafkaConsumer extends Client {
     private config;
     private topicConfig;
