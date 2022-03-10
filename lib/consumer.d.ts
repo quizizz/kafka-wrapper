@@ -5,8 +5,6 @@ import Client from './client';
 export declare type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;
 export declare type ListenActionFunction = (arg: Message) => void;
 declare class KafkaConsumer extends Client {
-    private config;
-    private topicConfig;
     private consumer;
     /**
      * Initializes a KafkaConsumer.

@@ -22,7 +22,7 @@ class KafkaProducer extends Client {
      * @param {import('node-rdkafka').ProducerTopicConfig} topicConfig: topic configs.
      * @param {EventEmitter} emitter: to emit log messages
      */
-    constructor(clientId: string, private config: ProducerGlobalConfig, private topicConfig: ProducerTopicConfig, emitter: EventEmitter) {
+    constructor(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter) {
         // producer config defaults should go here.
         config = Object.assign({
             'retry.backoff.ms': 200,

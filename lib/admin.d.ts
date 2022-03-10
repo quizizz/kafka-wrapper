@@ -3,7 +3,6 @@ import Client from './client';
 import { GlobalConfig } from 'node-rdkafka';
 import EventEmitter from 'events';
 declare class KafkaAdmin extends Client {
-    private config;
     private adminClient;
     /**
      * Initialzes a KafkaAdmin client with config.

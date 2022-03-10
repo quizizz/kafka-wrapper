@@ -12,7 +12,7 @@ class KafkaAdmin extends Client {
      * @param {object} config - global kafka config
      * @param {object} emitter - emitter to emit log event
      */
-    constructor(clientId: string, private config: GlobalConfig, emitter: EventEmitter) {
+    constructor(clientId: string, config: GlobalConfig, emitter: EventEmitter) {
         super(clientId, 'admin', config, {}, emitter);
         this.adminClient = null;
     }

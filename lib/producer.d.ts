@@ -10,8 +10,6 @@ export interface ProduceParameters {
     timestamp?: NumberNullUndefined;
 }
 declare class KafkaProducer extends Client {
-    private config;
-    private topicConfig;
     private producer;
     /**
      * Initializes a KafkaProducer.

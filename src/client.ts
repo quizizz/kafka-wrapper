@@ -3,20 +3,20 @@ import { GlobalConfig, LibrdKafkaError, TopicConfig } from "node-rdkafka";
 
 export default class Client {
     constructor(private clientId: string,
-        private clientType: string, private _config: GlobalConfig, private _topicConfig: TopicConfig, private emitter: EventEmitter) {
+        private clientType: string, protected config: GlobalConfig, protected topicConfig: TopicConfig, private emitter: EventEmitter) {
         this.clientId = clientId;
         this.clientType = clientType;
         
         // common config defaults should go here.
-        this._config = Object.assign({
+        this.config = Object.assign({
             'metadata.broker.list': 'localhost:9092',
             'socket.keepalive.enable': true,
           }, 
-          _config,
+          config,
           { 'client.id': clientId }
         );
         // commong topic configs defaults should go here. 
-        this._topicConfig = _topicConfig;
+        this.topicConfig = topicConfig;
         this.emitter = emitter;
     }
 

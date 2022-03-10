@@ -19,7 +19,7 @@ class KafkaConsumer extends Client {
      * @param {import('node-rdkafka').ConsumerTopicConfig} topicConfig: topic configs 
      * @param {EventEmitter} emitter: to emit log events
      */
-    constructor(clientId: string, groupId: string, private config: ConsumerGlobalConfig, private topicConfig: ConsumerTopicConfig, emitter: EventEmitter) {
+    constructor(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter) {
         // consumer specific default configs we would like to have
         config = Object.assign({
             'allow.auto.create.topics': true,
