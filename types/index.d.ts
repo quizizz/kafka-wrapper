@@ -47,3 +47,7 @@ export class KafkaAdmin {
     createPartitions(topic: string, totalPartitions: number, timeout?: number, actionPostPartitionCreation?: ErrorHandlingFunction): void;
     disconnect(): void;
 }
+
+export function getKafkaConsumer(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: any): KafkaConsumer;
+
+export function getKafkaProducer(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: any): KafkaProducer;

@@ -1,6 +1,8 @@
 const Kafka = require('node-rdkafka');
 const Client = require('./client');
 
+let _kafkaProducer = null;
+
 class KafkaProducer extends Client {
 
     /**
@@ -121,4 +123,11 @@ class KafkaProducer extends Client {
     }
 }
 
-module.exports = KafkaProducer;
+function getKafkaProducer(clientId, config, topicConfig, emitter) {
+    if (!_kafkaProducer) {
+        _kafkaProducer = new KafkaProducer(clientId, config, topicConfig, emitter);
+    }
+    return _kafkaProducer;
+}
+
+module.exports = getKafkaProducer;

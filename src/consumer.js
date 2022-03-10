@@ -1,6 +1,8 @@
 const Kafka = require('node-rdkafka');
 const Client = require('./client');
 
+let _kafkaConsumer = null;
+
 class KafkaConsumer extends Client {
 
     /**
@@ -190,4 +192,11 @@ class KafkaConsumer extends Client {
     }
 }
 
-module.exports = KafkaConsumer;
+function getKafkaConsumer(clientId, groupId, config, topicConfig, emitter) {
+    if (!_kafkaConsumer) {
+        _kafkaConsumer = new KafkaConsumer(clientId, groupId, config, topicConfig, emitter);
+    }
+    return _kafkaConsumer;
+}
+
+module.exports = getKafkaConsumer;
