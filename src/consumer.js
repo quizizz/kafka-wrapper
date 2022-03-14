@@ -157,10 +157,8 @@ class KafkaConsumer extends Client {
             if (!Array.isArray(msgs)) {
                 msgs = [msgs];
             }
-            msgs.forEach((msg) => {
-                msg = this._parseMessage(msg);
-                actionOnData(err, msg);
-            });
+            const parsedMsgs = msgs.map((msg) => this._parseMessage(msg));
+            actionOnData(err, parsedMsgs); 
         };
         return wrapper;
     }
