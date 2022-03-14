@@ -34,7 +34,12 @@ async function setupConsumer() {
     const consumer = new KafkaConsumer(
         'test-consumer-client', 
         'test-group1',
-        { 'metadata.broker.list': bootstrapServers }
+        { 
+          'metadata.broker.list': bootstrapServers,
+        },
+        {
+          'auto.offset.reset': 'earliest', 
+        }
     );
     await consumer.connect();
     consumer.subscribe([topic]);
@@ -43,7 +48,7 @@ async function setupConsumer() {
 
 async function testConsume() {
   const consumer = await setupConsumer();    
-  const times = 100;
+  const times = 5;
   for (let i = 0; i < times; i++) {
     consumer.consume((err, msg) => {
       console.log('error: ', err);
@@ -57,12 +62,20 @@ async function testConsume() {
 
 async function testConsumeBatch() {
   const consumer = await setupConsumer();    
-  const times = 100;
+  const times = 5;
   for (let i = 0; i < times; i++) {
-    consumer.consumeBatch(5, (err, msg) => {
-      console.log('error: ', err);
-      console.log('msg read: ', msg);
-      console.log('msg value: ', msg.value);
+    console.log('I\'m here');
+    consumer.consumeBatch(5, (err, msgs) => {
+      if (err) {
+        console.log('encountered error: ', err);
+        return;
+      }
+      console.log('msgs are: ', msgs);
+      msgs.forEach(msg => {
+        console.log('msg read: ', msg);
+        console.log('msg value: ', msg.value);
+      });
+
     });
     console.log('sleeping...');
     await sleep(1000);
@@ -82,7 +95,7 @@ async function testListen() {
   }
 }
   
-testConsume()
+testConsumeBatch()
   .catch((err) => {
     console.error('Something went wrong:', err);
     process.exit(1);
