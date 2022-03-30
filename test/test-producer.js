@@ -9,7 +9,7 @@ async function producerExample() {
       console.log(
         'Please provide command line arguments to the script.\n' +
         'Expected arguments in order are: `bootstrap-server` and `topic`. Example....\n' + 
-        'node test-producer.js bootstrap-servers=34.229.149.56:9092,54.196.127.213:9092 topic=test-topic'
+        'node test-producer.js bootstrap-servers=broker-1-ip:9092,broker-2-ip:9092 topic=test-topic'
       );
       process.exit(1);
     }
@@ -49,6 +49,7 @@ async function producerExample() {
         const value = items[Math.floor(Math.random() * items.length)];
 
         producer.produce({ topic, message: value, key });
+        console.log(`Produced event: topic=${topic}, message=${value}, key=${key}`);
       }
       await sleep(1000);
     }

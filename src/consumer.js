@@ -31,42 +31,44 @@ class KafkaConsumer extends Client {
      * @returns {Promise} 
      */
     connect() {
-        return new Promise((resolve, reject) => {
-            try {
-                this.consumer
-                    .connect()
-                    .on('ready', (info, metadata) => {
-                        this.success('Consumer connected to kafka cluster....', {
-                            name: info.name,
-                        });
-                        resolve(this);
-                    })
-                    .on('connection.failure', (err, clientMetrics) => {
-                        this.error('Consumer encountered error while connecting to Kafka.', JSON.stringify(err));
-                        reject(err);
-                    })
-                    .on('event.error', (err) => {
-                        this.error('Consumer encountered error.', JSON.stringify(err));
-                        reject(err);
-                    })
-                    .on('event.log', (eventData) => this.log('Logging consumer event: ', eventData))
-                    .on('disconnected', (metrics) => {
-                        this.log('Consumer disconnected. Client metrics are: ' + metrics.connectionOpened)
-                    })
-                    .on('offset.commit', (err, topicPartitions) => {
-                        if (err) {
-                            this.error('Encountered error while committing offset.', JSON.stringify(err));
-                            return;
-                        }
-                        this.log('Commited offset for topic-partitions: ' + JSON.stringify(topicPartitions));
-                    })
-                    .on('subscribed', (topics) => {
-                        this.log('Subscribed to topics: ' + JSON.stringify(topics));
-                    });
-            } catch (err) {
-                this.error('Consumer encountered while connecting to kafka server.', err);
-                reject(err);
+        this.consumer
+        .on('ready', (info, metadata) => {
+            this.success('Successfully connected to kafka.', {
+                name: info.name,
+                metadata: {
+                    orig_broker_id: metadata.orig_broker_id,
+                    orig_broker_name: metadata.orig_broker_name,
+                    brokers: metadata.brokers
+                }
+            });
+        })
+        .on('connection.failure', (err, metrics) => {
+            this.error(`Encountered connection failure with kafka. Client metrics: ${metrics.connectionOpened}`, err);
+        })
+        .on('event.error', (err) => {
+            this.error('Encountered error event.', err);
+        })
+        .on('disconnected', (metrics) => {
+            this.log(`Disconnected from kafka. Client metrics: ${metrics.connectionOpened}`);
+        })
+        .on('offset.commit', (err, topicPartitions) => {
+            if (err) {
+                this.error('Encountered error while committing offset.', err);
+                return;
             }
+            this.log(`Commited offset for topic-partitions: ${JSON.stringify(topicPartitions)}`);
+        })
+        .on('subscribed', (topics) => {
+            this.log(`Subscribed to topics: ${topics}`);
+        });
+        return new Promise((resolve, reject) => {
+                this.consumer.connect({}, (err, data) => {
+                    if (err) {
+                        this.error('Encountered error while connecting to kafka.');
+                        return reject(err);
+                    }
+                    resolve(data);
+                })
         });
     }
 
