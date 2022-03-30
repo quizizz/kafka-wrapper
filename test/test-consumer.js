@@ -60,7 +60,6 @@ async function testConsumeBatch() {
   const consumer = await setupConsumer();    
   const times = 5;
   for (let i = 0; i < times; i++) {
-    console.log('I\'m here');
     consumer.consumeBatch(5, (err, msgs) => {
       if (err) {
         console.log('encountered error: ', err);
