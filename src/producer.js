@@ -53,8 +53,14 @@ class KafkaProducer extends Client {
         .on('delivery-report', (err, report) => {
             // not logging successful delivery reports to not bombard log collector with too many messages
             if (err) {
-                this.error(`Error while producing message: topic=${report.topic}, key=${report.key}`, err);
-                return;
+                this.error(`Error while producing the message: ${err}`, {
+                    message: report.value,
+                    timestamp: report.timestamp,
+                    key: report.key,
+                    topic: report.topic,
+                    partition: report.partition,
+                    offset: report.offset,
+                });
             } 
         })
         .on('event.error', (err) => {

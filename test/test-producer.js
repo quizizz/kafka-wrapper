@@ -35,7 +35,11 @@ async function producerExample() {
   
     const producer = new KafkaProducer(
         'test-producer-client', 
-        { 'metadata.broker.list': bootstrapServers }
+        { 
+          'metadata.broker.list': bootstrapServers,
+          'message.send.max.retries': 5,
+          'message.timeout.ms': 5000,
+        }
     );
     await producer.connect();
   
