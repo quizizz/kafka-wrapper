@@ -36,37 +36,49 @@ class KafkaProducer extends Client {
      * @returns {Promise} 
      */
     connect() {
-        return new Promise((resolve, reject) => {
-            try {
-                this.producer
-                .connect()
-                .on('ready', (info, metadata) => {
-                    this.success('Producer connected to kafka cluster...', {
-                        name: info.name,
-                    });
-                    // set automating polling to every second for delivery reports
-                    this.producer.setPollInterval(1000);
-                    resolve(this);
-                })
-                .on('delivery-report', (err, report) => {
-                    if (err) {
-                        this.error('Error producing message: ', err);
-                    } else {
-                        this.log(`Produced event: key=${report.key}, timestamp=${report.timestamp}.`);
-                    }
-                })
-                .on('event.error', (err) => {
-                    this.error('Producer encountered error: ', err);
-                    reject(err);
-                })
-                .on('event.log',  (eventData) => this.log('Logging consumer event: ', eventData))
-                .on('disconnected', (metrics) => {
-                    this.log('Producer disconnected. Client metrics are: ', metrics.connectionOpened);
+        this.producer
+        .on('ready', (info, metadata) => {
+            this.success('Successfully connected to kafka.', {
+                name: info.name,
+                metadata: {
+                    orig_broker_id: metadata.orig_broker_id,
+                    orig_broker_name: metadata.orig_broker_name,
+                    brokers: metadata.brokers
+                }
+            });
+        })
+        .on('connection.failure', (err, metrics) => {
+            this.error(`Encountered connection failure with kafka. Client metrics: ${metrics.connectionOpened}`, JSON.stringify(err));
+        })
+        .on('delivery-report', (err, report) => {
+            // not logging successful delivery reports to not bombard log collector with too many messages
+            if (err) {
+                this.error(`Error while producing the message: ${err}`, {
+                    message: report.value,
+                    timestamp: report.timestamp,
+                    key: report.key,
+                    topic: report.topic,
+                    partition: report.partition,
+                    offset: report.offset,
                 });
-            } catch (err) {
-                this.error('Producer encountered while connecting to kafka server.', err);
-                reject(err);
-            }
+            } 
+        })
+        .on('event.error', (err) => {
+            this.error('Producer encountered error: ', err);
+        })
+        .on('disconnected', (metrics) => {
+            this.log(`Disconnected from kafka. Client metrics are:  ${metrics.connectionOpened}`);
+        });
+        // set automating polling to every second for delivery reports
+        this.producer.setPollInterval(1000);
+        return new Promise((resolve, reject) => {
+                this.producer.connect({}, (err, data) => {
+                    if (err) {
+                        this.error('Encountered error while connecting to kafka.');
+                        return reject(err);
+                    }
+                    resolve(data);
+                });
         });
     }
 

@@ -10,7 +10,7 @@ async function setupConsumer() {
     console.log(
         'Please provide command line arguments to the script.\n' +
         'Expected arguments in order are: `bootstrap-server` and `topic`. Example....\n' + 
-        'node test-consumer.js bootstrap-servers=34.229.149.56:9092,54.196.127.213:9092 topic=test-topic'
+        'node test-consumer.js bootstrap-servers=broker-1-ip:9092,broker-2-ip:9092 topic=test-topic'
     );
     process.exit(1);
     }
@@ -34,12 +34,8 @@ async function setupConsumer() {
     const consumer = new KafkaConsumer(
         'test-consumer-client', 
         'test-group1',
-        { 
-          'metadata.broker.list': bootstrapServers,
-        },
-        {
-          'auto.offset.reset': 'earliest', 
-        }
+        { 'metadata.broker.list': bootstrapServers },
+        { 'auto.offset.reset': 'beginning'},
     );
     await consumer.connect();
     consumer.subscribe([topic]);
@@ -64,7 +60,6 @@ async function testConsumeBatch() {
   const consumer = await setupConsumer();    
   const times = 5;
   for (let i = 0; i < times; i++) {
-    console.log('I\'m here');
     consumer.consumeBatch(5, (err, msgs) => {
       if (err) {
         console.log('encountered error: ', err);
