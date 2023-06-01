@@ -51,5 +51,5 @@ declare class KafkaProducer extends Client {
      */
     disconnect(postDisconnectAction?: (err: any, data: ClientMetrics) => any): this;
 }
-declare function getKafkaProducer(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter): KafkaProducer;
+declare function getKafkaProducer(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter, createNew?: boolean): KafkaProducer;
 export default getKafkaProducer;

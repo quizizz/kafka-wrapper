@@ -67,5 +67,5 @@ declare class KafkaConsumer extends Client {
      */
     _parseMessage(msg: any): any;
 }
-declare function getKafkaConsumer(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter): KafkaConsumer;
+declare function getKafkaConsumer(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter, createNew?: boolean): KafkaConsumer;
 export default getKafkaConsumer;
