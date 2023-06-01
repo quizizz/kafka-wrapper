@@ -1,5 +1,5 @@
 {
-  "name": "kafka-wrapper",
+  "name": "@quizizz/kafka",
   "version": "1.0.2",
   "description": "A simple kafka client to produce and consume messages to/from kafka cluster.",
   "main": "lib/index.js",
