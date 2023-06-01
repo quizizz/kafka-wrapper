@@ -196,7 +196,12 @@ class KafkaConsumer extends Client {
     }
 }
 
-function getKafkaConsumer(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter): KafkaConsumer {
+function getKafkaConsumer(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter, createNew: boolean = false): KafkaConsumer {
+    if (createNew) {
+        const consumer = new KafkaConsumer(clientId, groupId, config, topicConfig, emitter);
+        return consumer;
+    }
+
     if (!_kafkaConsumer) {
         _kafkaConsumer = new KafkaConsumer(clientId, groupId, config, topicConfig, emitter);
     }

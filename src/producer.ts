@@ -133,7 +133,11 @@ class KafkaProducer extends Client {
     }
 }
 
-function getKafkaProducer(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter): KafkaProducer {
+function getKafkaProducer(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter, createNew: boolean = false): KafkaProducer {
+    if (createNew) {
+        const producer = new KafkaProducer(clientId, config, topicConfig, emitter);
+        return producer;
+    }
     if (!_kafkaProducer) {
         _kafkaProducer = new KafkaProducer(clientId, config, topicConfig, emitter);
     }

@@ -1,6 +1,6 @@
 {
   "name": "kafka-wrapper",
-  "version": "0.1.0",
+  "version": "1.0.2",
   "description": "A simple kafka client to produce and consume messages to/from kafka cluster.",
   "main": "lib/index.js",
   "scripts": {
