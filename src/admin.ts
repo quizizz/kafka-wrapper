@@ -1,5 +1,5 @@
 import Client from './client';
-import { AdminClient, GlobalConfig } from 'node-rdkafka';
+import { AdminClient, GlobalConfig } from '@confluentinc/kafka-javascript';
 import EventEmitter from 'events';
 
 class KafkaAdmin extends Client {

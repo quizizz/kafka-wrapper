@@ -1,2 +1,2 @@
 # kafka-wrapper
-A simple kafka wrapper for `node-rdkafka` client.
+A simple kafka wrapper for `@confluentinc/kafka-javascript` client.

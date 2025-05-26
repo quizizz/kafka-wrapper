@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { GlobalConfig, LibrdKafkaError, TopicConfig } from "node-rdkafka";
+import { GlobalConfig, LibrdKafkaError, TopicConfig } from "@confluentinc/kafka-javascript";
 
 export default class Client {
     constructor(private clientId: string,

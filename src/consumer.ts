@@ -1,4 +1,4 @@
-import Kafka, { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from 'node-rdkafka';
+import Kafka, { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from '@confluentinc/kafka-javascript';
 import { EventEmitter } from 'stream';
 import Client from './client';
 
@@ -15,8 +15,8 @@ class KafkaConsumer extends Client {
      * Initializes a KafkaConsumer.
      * @param {String} clientId: id to identify a client consuming the message. 
      * @param {String} groupId: consumer group id, the consumer belongs to. 
-     * @param {import('node-rdkafka').ConsumerGlobalConfig} config: configs for consumer.
-     * @param {import('node-rdkafka').ConsumerTopicConfig} topicConfig: topic configs 
+     * @param {import('@confluentinc/kafka-javascript').ConsumerGlobalConfig} config: configs for consumer.
+     * @param {import('@confluentinc/kafka-javascript').ConsumerTopicConfig} topicConfig: topic configs 
      * @param {EventEmitter} emitter: to emit log events
      */
     constructor(clientId: string, groupId: string, config: ConsumerGlobalConfig, topicConfig: ConsumerTopicConfig, emitter: EventEmitter) {
@@ -80,7 +80,7 @@ class KafkaConsumer extends Client {
 
     /**
      * Subscribe to topics.
-     * @param {import('node-rdkafka').SubscribeTopicList} topics: array of topic names. 
+     * @param {import('@confluentinc/kafka-javascript').SubscribeTopicList} topics: array of topic names. 
      * @returns {KafkaConsumer}
      */
     subscribe(topics: SubscribeTopicList): this {
@@ -185,7 +185,7 @@ class KafkaConsumer extends Client {
 
     /**
      * Parses message before passing it to consumer callback.
-     * @param {Object} msg - expects it to be in node-rdkafka msg format. 
+     * @param {Object} msg - expects it to be in @confluentinc/kafka-javascript msg format. 
      * @returns 
      */
     _parseMessage(msg) {

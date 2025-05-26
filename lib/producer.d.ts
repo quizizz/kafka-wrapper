@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import EventEmitter from 'events';
-import { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from 'node-rdkafka';
+import { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from '@confluentinc/kafka-javascript';
 import Client, { ErrorHandlingFunction } from './client';
 export interface ProduceParameters {
     topic: string;
@@ -14,8 +14,8 @@ declare class KafkaProducer extends Client {
     /**
      * Initializes a KafkaProducer.
      * @param {String} clientId: id to identify a client producing the message.
-     * @param {import('node-rdkafka').ProducerGlobalConfig} config: configs for producer.
-     * @param {import('node-rdkafka').ProducerTopicConfig} topicConfig: topic configs.
+     * @param {import('@confluentinc/kafka-javascript').ProducerGlobalConfig} config: configs for producer.
+     * @param {import('@confluentinc/kafka-javascript').ProducerTopicConfig} topicConfig: topic configs.
      * @param {EventEmitter} emitter: to emit log messages
      */
     constructor(clientId: string, config: ProducerGlobalConfig, topicConfig: ProducerTopicConfig, emitter: EventEmitter);
@@ -29,17 +29,17 @@ declare class KafkaProducer extends Client {
     /**
      * Produce a message to a topic-partition.
      * @param {String} topic: name of topic
-     * @param {import('node-rdkafka').NumberNullUndefined} partition: partition number to produce to.
+     * @param {import('@confluentinc/kafka-javascript').NumberNullUndefined} partition: partition number to produce to.
      * @param {any} message: message to be produced.
-     * @param {import('node-rdkafka').MessageKey} key: key associated with the message.
-     * @param {import('node-rdkafka').NumberNullUndefined} timestamp: timestamp to send with the message.
+     * @param {import('@confluentinc/kafka-javascript').MessageKey} key: key associated with the message.
+     * @param {import('@confluentinc/kafka-javascript').NumberNullUndefined} timestamp: timestamp to send with the message.
      * @returns {import('../types').BooleanOrNumber}: returns boolean or librdkafka error code.
      */
     produce({ topic, message, partition, key, timestamp }: ProduceParameters): boolean | number;
     /**
      * Flush everything on the internal librdkafka buffer.
      * Good to perform before disconnect.
-     * @param {import('node-rdkafka').NumberNullUndefined}} timeout
+     * @param {import('@confluentinc/kafka-javascript').NumberNullUndefined}} timeout
      * @param {import('../types').ErrorHandlingFunction} postFlushAction
      * @returns {KafkaProducer}
      */
