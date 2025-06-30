@@ -1,5 +1,5 @@
 const Client = require('./client');
-const Kafka = require('node-rdkafka');
+const Kafka = require('@confluentinc/kafka-javascript');
 
 class KafkaAdmin extends Client {
 

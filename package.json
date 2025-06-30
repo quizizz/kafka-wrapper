@@ -18,6 +18,6 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "node-rdkafka": "^2.12.0"
+    "@confluentinc/kafka-javascript": "^2.12.0"
   }
 }
