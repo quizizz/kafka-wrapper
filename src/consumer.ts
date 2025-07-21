@@ -1,4 +1,4 @@
-import Kafka, { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from 'node-rdkafka';
+import Kafka, { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from '@confluentinc/kafka-javascript';
 import { EventEmitter } from 'stream';
 import Client from './client';
 

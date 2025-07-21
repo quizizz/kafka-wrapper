@@ -1,7 +1,7 @@
 import getKafkaProducer, { ProduceParameters } from './producer'
 import getKafkaConsumer, { ConsumeActionFunction, ListenActionFunction } from './consumer';
 import KafkaAdmin from './admin';
-import { ClientMetrics, LibrdKafkaError, NumberNullUndefined, SubscribeTopicList } from 'node-rdkafka';
+import { ClientMetrics, LibrdKafkaError, NumberNullUndefined, SubscribeTopicList } from '@confluentinc/kafka-javascript';
 import { ErrorHandlingFunction } from './client';
 
 interface KafkaConsumer {

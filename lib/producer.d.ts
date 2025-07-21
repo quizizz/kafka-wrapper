@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import EventEmitter from 'events';
-import { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from 'node-rdkafka';
+import { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from '@confluentinc/kafka-javascript';
 import Client, { ErrorHandlingFunction } from './client';
 export interface ProduceParameters {
     topic: string;

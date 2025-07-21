@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import Kafka, { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from 'node-rdkafka';
+import Kafka, { ClientMetrics, LibrdKafkaError, MessageKey, NumberNullUndefined, ProducerGlobalConfig, ProducerTopicConfig } from '@confluentinc/kafka-javascript';
 import Client, { ErrorHandlingFunction } from './client';
 
 export interface ProduceParameters{

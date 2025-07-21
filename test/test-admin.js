@@ -1,4 +1,4 @@
-const KafkaAdmin  = require('..').KafkaAdmin;
+const { KafkaAdmin } = require('..');
 
 
 function sleep(ms) {

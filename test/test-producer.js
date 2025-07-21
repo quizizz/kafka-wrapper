@@ -1,4 +1,4 @@
-const KafkaProducer  = require('..').KafkaProducer;
+const { getKafkaProducer } = require('..');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,7 +33,7 @@ async function producerExample() {
     const users = [ "eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther" ];
     const items = [ "book", "alarm clock", "t-shirts", "gift card", "batteries" ];
   
-    const producer = new KafkaProducer(
+    const producer = getKafkaProducer(
         'test-producer-client', 
         { 'metadata.broker.list': bootstrapServers }
     );

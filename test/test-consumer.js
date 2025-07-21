@@ -1,4 +1,4 @@
-const KafkaConsumer  = require('..').KafkaConsumer;
+const { getKafkaConsumer } = require('..');
 
 
 function sleep(ms) {
@@ -31,7 +31,7 @@ async function setupConsumer() {
     console.log('bootstrap-servers: ', bootstrapServers);
     console.log('topic: ', topic);
   
-    const consumer = new KafkaConsumer(
+    const consumer = getKafkaConsumer(
         'test-consumer-client', 
         'test-group1',
         { 

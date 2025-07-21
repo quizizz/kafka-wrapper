@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from 'node-rdkafka';
+import { ConsumerGlobalConfig, ConsumerTopicConfig, LibrdKafkaError, Message, SubscribeTopicList } from '@confluentinc/kafka-javascript';
 import { EventEmitter } from 'stream';
 import Client from './client';
 export declare type ConsumeActionFunction = (err: LibrdKafkaError, messages: Message[]) => void;

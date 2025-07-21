@@ -1,6 +1,6 @@
 {
   "name": "@quizizz/kafka",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "A simple kafka client to produce and consume messages to/from kafka cluster.",
   "main": "lib/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "node-rdkafka": "^2.18.0"
+    "@confluentinc/kafka-javascript": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "17.0.21",
